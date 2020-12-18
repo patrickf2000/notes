@@ -1,0 +1,8 @@
+./rose-compiler -rose:OpenMP:ast_only depobj.c
+
+./rose-compiler -rose:openmp:lowering -rose:skipfinalCompileStep simd.c
+
+cmake ../rex_src -DOMPPARSER_PATH=$REX_ROOT/ompparser_install -DCMAKE_BUILD_TYPE=Debug
+
+
+
