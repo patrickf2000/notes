@@ -1,11 +1,15 @@
-#include <iostream>
+#include <stdlib.h>
 
 extern void parse(const char *path);
 
-int main(int argc, char *argv[]) {
-	if (argc > 1) {
+int main(int argc, char *argv[])
+{
+	if (argc > 1)
+	{
 		parse(argv[1]);
-	} else {
+	}
+	else
+	{
 		parse("");
 	}
 	

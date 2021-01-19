@@ -1,1 +1,6 @@
-This is a sentence with. The number is 20. Oh yes.
+int main() {
+    int x = 5;
+    x = 5;
+    x();
+}
+

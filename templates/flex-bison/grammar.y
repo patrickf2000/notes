@@ -7,62 +7,110 @@ int yylex();
 void yyerror(const char *s);
 %}
 
+%define parse.error verbose
+
 %union {
 	char* stype;
 	int itype;
 	float ftype;
 }
 
-%token COMMENT
+%token INT STRING FLOAT
 %token <itype> INTEGER 
-%token <ftype> FLOAT
-%token <stype> STRING
-%token WHATEVER
+%token <ftype> FLOATL
+%token <stype> STRINGL ID
+
+%left '+' '-'
+%left '*' '/'
+
+// TODO: Change this
+//%type <my_type> expression
+
+%start translation_unit
 
 %%
-all_statements: statement all_statements | /* empty */;
+
+data_type:
+      INT
+    | FLOAT
+    | STRING
+    ;
+
+constant:
+      INTEGER
+    | FLOATL
+    ;
+
+primary_expression:
+      ID
+    | STRINGL
+    ;
+
+expression:
+      primary_expression
+    | constant
+    | expression '+' expression
+    | expression '-' expression
+    | expression '*' expression
+    | expression '/' expression
+    ;
+
+assign_expr:
+      ID '=' expression
+    ;
+
+var_assign: assign_expr;
+
+var_dec:
+      data_type ID
+    | data_type assign_expr
+    ;
+    
+func_call:
+      ID '(' ')'
+    ;
 
 statement:
-	  comment
-	| number
-	| string
-	| block
-	| something
-	;
-	
-comment:
-	  statement COMMENT			{printf("Comment!\n");}
-	;
-	
-number:
-	  statement INTEGER			{printf("Integer: %d\n", $2);}
-	| statement FLOAT			{printf("Float: %f\n", $2);}
-	| /* empty */
-	;
-	
-string:
-	  statement STRING			{printf("String: %s\n", $2);}
-	;
-	
+      var_dec ';'
+    | var_assign ';'
+    | func_call ';'
+    ;
+
+statement_list:
+      statement
+    | statement_list statement
+    ;
+
 block:
-	  statement '{'				{printf("Block begin\n");}
-	| statement '}'				{printf("Block end\n");}
-	;
-	
-something:
-	  statement WHATEVER		{printf("What??\n");}
-	;
+      '{' '}'
+    | '{' statement_list '}'
+    ;
+
+function:
+      data_type ID '(' ')' block
+    ;
+
+function_list:
+      function
+    | function_list function
+    ;
+
+translation_unit:
+      function_list
+    | translation_unit function_list
+    ;
 %%
 
 //Our parsing function
-void parse(const char *path) {
+void parse(const char *path)
+{
 	yyin = fopen(path, "r");
 	yyparse();
 }
 
 //Handle syntax errors
-void yyerror(const char *s) {
+void yyerror(const char *s)
+{
 	printf("Syntax error: %s\n", s);
 }
 
-int yywrap() { return 1; }
