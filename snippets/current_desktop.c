@@ -1,4 +1,4 @@
-// g++ win.c -o win -lX11
+// gcc win.c -o win -lX11
 #include <stdio.h>
 #include <limits.h>
 #include <X11/Xlib.h>
